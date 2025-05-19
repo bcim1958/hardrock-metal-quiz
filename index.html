@@ -1,35 +1,106 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Hardrock & Metal Quiz Demo</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Hardrock & Metal Quiz</title>
 <style>
-body{font-family:'Arial Black',sans-serif;background:url('https://images.unsplash.com/photo-1614359992100-2f6b12ec3d27?auto=format&fit=crop&w=1950&q=80') center/cover fixed no-repeat;margin:0;color:#fff}
-.wrap{max-width:700px;margin:60px auto;padding:30px 40px;background:rgba(0,0,0,.85);border-radius:12px;box-shadow:0 0 15px #f00}
-h1,h2{text-align:center;color:#ff4444}
+@import url('https://fonts.googleapis.com/css2?family=Russo+One&display=swap');
+body,html{margin:0;height:100%;font-family:'Russo One',Arial,Helvetica,sans-serif;background:#000;color:#fff;}
+.bg{position:fixed;inset:0;background:url('https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2?auto=format&fit=crop&w=1950&q=80') center/cover no-repeat;filter:brightness(0.4);z-index:-1}
+.center{max-width:800px;margin:auto;padding:20px}
+.card{background:rgba(0,0,0,.8);border-radius:14px;padding:40px;box-shadow:0 0 20px #ff0000}
+h1,h2{text-align:center;color:#ff4444;margin-top:0}
+button{background:#ff4444;border:none;color:#fff;padding:12px 28px;border-radius:8px;font-size:1rem;cursor:pointer}
+button:hover{background:#ff2222}
+.hidden{display:none}
 ul{list-style:none;padding:0}
 li{margin:12px 0}
-button{padding:10px 22px;border:0;border-radius:8px;background:#ff4444;color:#fff;cursor:pointer}
-.hidden{display:none}
+.progress{margin-bottom:15px}
 </style>
 </head>
 <body>
-<div class="wrap">
-<h1>Hardrock & Metal Quiz 🤘</h1>
-<div id="quiz">
-<h2 id="q"></h2>
-<ul id="opt"></ul>
-<p>Tijd: <span id="t">20</span>s</p>
-<button onclick="next()">Volgende</button>
+<div class="bg"></div>
+<div class="center">
+<div id="intro" class="card">
+  <h1>Hardrock & Metal Quiz</h1>
+  <p>Welkom, headbanger! Test je kennis van 70’s & 80’s hardrock, heavy‑ en glam‑metal.<br>
+  25 vragen • 6 opties • 20 seconden p/vraag.<br>
+  Kies snel, verandering is niet mogelijk.<br><br>
+  Ben je er klaar voor?</p>
+  <div style="text-align:center"><button onclick="startQuiz()">Start Quiz</button></div>
 </div>
-<div id="res" class="hidden"><h2 id="score"></h2></div>
+
+<div id="quiz" class="card hidden">
+  <div class="progress"><span id="qcount">1/25</span></div>
+  <h2 id="question"></h2>
+  <ul id="options"></ul>
+  <p>Tijd: <span id="time">20</span>s</p>
+  <div style="text-align:right"><button onclick="nextQuestion()">Volgende</button></div>
 </div>
+
+<div id="waiting" class="card hidden">
+  <h2>Rock on...</h2>
+  <p>Bereken resultaat<span id="dots"></span></p>
+</div>
+
+<div id="result" class="card hidden">
+  <h2 id="score-text"></h2>
+  <p id="comment"></p>
+</div>
+</div>
+
 <script>
-const quiz=[{q:"Welke band bracht in 1980 het album ‘Back in Black’ uit?",o:["Led Zeppelin","AC/DC","Van Halen","Iron Maiden","Motörhead","Scorpions"],a:1},{q:"Wie is de zanger van Iron Maiden sinds 1981 (met korte onderbreking)?",o:["Rob Halford","Bruce Dickinson","David Coverdale","Ozzy Osbourne","Ronnie James Dio","Ian Gillan"],a:1},{q:"Wat is het debuutalbum van Guns N’ Roses uit 1987?",o:["Paradise City","Use Your Illusion","Appetite for Destruction","G N' R Lies","Sweet Child O' Mine","Welcome to the Jungle"],a:2},{q:"Welke band bracht het glam‑metal‑album ‘Slippery When Wet’ uit?",o:["Bon Jovi","Mötley Crüe","Cinderella","Whitesnake","Poison","Skid Row"],a:0},{q:"Wat was een grote hit van Deep Purple in 1972?",o:["Paranoid","Smoke on the Water","Breaking the Law","Living After Midnight","Iron Man","Highway to Hell"],a:1}];
-let i=0,s=0,timer;
-function load(){clearInterval(timer);document.getElementById('t').textContent=20;timer=setInterval(()=>{let x=document.getElementById('t');x.textContent--;if(x.textContent==0){clearInterval(timer);next();}},1000);const {q,o}=quiz[i];document.getElementById('q').textContent=q;document.getElementById('opt').innerHTML=o.map((v,k)=>`<li><label><input type="radio" name="a" value="${k}"> ${v}</label></li>`).join('');}
-function next(){clearInterval(timer);const sel=document.querySelector('input[name="a"]:checked');if(sel&&+sel.value===quiz[i].a)s++;if(++i<quiz.length)load();else{document.getElementById('quiz').classList.add('hidden');let msg=s==5?"Rocklegende!":s<3?"Blijf oefenen, headbanger!":"Goed gedaan!";document.getElementById('score').textContent=`${msg} Je score: ${s}/5`;document.getElementById('res').classList.remove('hidden');}}
-window.onload=load;
+const quiz=[{"question": "Welke band bracht het album 'Paranoid' uit in 1970?", "options": ["Led Zeppelin", "Deep Purple", "Black Sabbath", "KISS", "Uriah Heep", "Motörhead"], "answer": 2}];
+
+let current=0,score=0,timer,waitDots;
+function $(id){return document.getElementById(id);}
+
+function startQuiz(){
+  $('#intro').classList.add('hidden');
+  $('#quiz').classList.remove('hidden');
+  loadQuestion();
+}
+
+function loadQuestion(){
+  clearInterval(timer);
+  $('#time').textContent=20;
+  timer=setInterval(()=>{let t=$('#time');t.textContent--; if(t.textContent==0){nextQuestion();} },1000);
+  const q=quiz[current];
+  $('#qcount').textContent=`${current+1}/25`;
+  $('#question').textContent=q.question;
+  $('#options').innerHTML=q.options.map((opt,i)=>`<li><label><input type="radio" name="opt" value="${i}"> ${opt}</label></li>`).join('');
+}
+
+function nextQuestion(){
+  clearInterval(timer);
+  const sel=document.querySelector('input[name="opt"]:checked');
+  if(sel && +sel.value===quiz[current].answer)score++;
+  current++;
+  if(current<quiz.length){loadQuestion();}
+  else{showWaiting();}
+}
+
+function showWaiting(){
+  $('#quiz').classList.add('hidden');
+  $('#waiting').classList.remove('hidden');
+  let dots=0;
+  waitDots=setInterval(()=>{$('#dots').textContent='.'.repeat((++dots)%4)},500);
+  setTimeout(showResult,5000);
+}
+
+function showResult(){
+  clearInterval(waitDots);
+  $('#waiting').classList.add('hidden');
+  $('#result').classList.remove('hidden');
+  $('#score-text').textContent=`Je score: ${score} van 25`;
+  let msg="Goed gedaan!";
+  if(score===25)msg="Rocklegende! Perfect!";
+  else if(score>=18)msg="Metal‑Maestro!";
+  else if(score>=10)msg="Strak gespeeld!";
+  else msg="Blijf oefenen, headbanger!";
+  $('#comment').textContent=msg;
+}
 </script>
-</body></html>
+</body>
+</html>
