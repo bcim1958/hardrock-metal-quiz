@@ -1,106 +1,146 @@
+
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Hardrock & Metal Quiz</title>
+<title>Hard Rock & Metal Quiz</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Russo+One&display=swap');
-body,html{margin:0;height:100%;font-family:'Russo One',Arial,Helvetica,sans-serif;background:#000;color:#fff;}
-.bg{position:fixed;inset:0;background:url('https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2?auto=format&fit=crop&w=1950&q=80') center/cover no-repeat;filter:brightness(0.4);z-index:-1}
-.center{max-width:800px;margin:auto;padding:20px}
-.card{background:rgba(0,0,0,.8);border-radius:14px;padding:40px;box-shadow:0 0 20px #ff0000}
-h1,h2{text-align:center;color:#ff4444;margin-top:0}
-button{background:#ff4444;border:none;color:#fff;padding:12px 28px;border-radius:8px;font-size:1rem;cursor:pointer}
-button:hover{background:#ff2222}
-.hidden{display:none}
-ul{list-style:none;padding:0}
-li{margin:12px 0}
-.progress{margin-bottom:15px}
+body {
+    font-family: Arial, sans-serif;
+    background-color: #111;
+    color: #eee;
+    text-align: center;
+}
+#quiz-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+.question {
+    font-size: 1.3em;
+    margin: 20px 0;
+}
+.option {
+    display: block;
+    margin: 8px;
+    padding: 10px;
+    border: 2px solid #555;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.option:hover {
+    background: #222;
+}
+#timer {
+    font-size: 1.2em;
+    margin-top: 10px;
+}
+.hidden {
+    display: none;
+}
+#result {
+    font-size: 1.5em;
+}
+button {
+    padding: 10px 20px;
+    font-size: 1em;
+    margin-top: 20px;
+}
 </style>
 </head>
 <body>
-<div class="bg"></div>
-<div class="center">
-<div id="intro" class="card">
-  <h1>Hardrock & Metal Quiz</h1>
-  <p>Welkom, headbanger! Test je kennis van 70’s & 80’s hardrock, heavy‑ en glam‑metal.<br>
-  25 vragen • 6 opties • 20 seconden p/vraag.<br>
-  Kies snel, verandering is niet mogelijk.<br><br>
-  Ben je er klaar voor?</p>
-  <div style="text-align:center"><button onclick="startQuiz()">Start Quiz</button></div>
+<div id="quiz-container">
+    <h1>🔥 Hard Rock & Metal Quiz 🔥</h1>
+    <div id="question-area">
+        <div id="timer"></div>
+        <div id="question-text" class="question"></div>
+        <div id="options"></div>
+    </div>
+    <div id="result" class="hidden"></div>
+    <button id="restart-btn" class="hidden">Restart Quiz</button>
 </div>
-
-<div id="quiz" class="card hidden">
-  <div class="progress"><span id="qcount">1/25</span></div>
-  <h2 id="question"></h2>
-  <ul id="options"></ul>
-  <p>Tijd: <span id="time">20</span>s</p>
-  <div style="text-align:right"><button onclick="nextQuestion()">Volgende</button></div>
-</div>
-
-<div id="waiting" class="card hidden">
-  <h2>Rock on...</h2>
-  <p>Bereken resultaat<span id="dots"></span></p>
-</div>
-
-<div id="result" class="card hidden">
-  <h2 id="score-text"></h2>
-  <p id="comment"></p>
-</div>
-</div>
-
 <script>
-const quiz=[{"question": "Welke band bracht het album 'Paranoid' uit in 1970?", "options": ["Led Zeppelin", "Deep Purple", "Black Sabbath", "KISS", "Uriah Heep", "Motörhead"], "answer": 2}];
+const questions = [{"q": "Which band released the album \u2018Paranoid\u2019 in 1970?", "options": ["Deep Purple", "Led Zeppelin", "Black Sabbath", "Uriah Heep", "Blue \u00d6yster Cult", "Thin Lizzy"], "a": 2}, {"q": "Which guitarist famously used a Frankenstrat guitar?", "options": ["Jimmy Page", "Ritchie Blackmore", "Eddie Van Halen", "Tony Iommi", "Angus Young", "Joe Perry"], "a": 2}, {"q": "Placeholder question 3?", "options": ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6"], "a": 0}, {"q": "Placeholder question 4?", "options": ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6"], "a": 0}, {"q": "Placeholder question 5?", "options": ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6"], "a": 0}, {"q": "Placeholder question 6?", "options": ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6"], "a": 0}, {"q": "Placeholder question 7?", "options": ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6"], "a": 0}, {"q": "Placeholder question 8?", "options": ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6"], "a": 0}, {"q": "Placeholder question 9?", "options": ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6"], "a": 0}, {"q": "Placeholder question 10?", "options": ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6"], "a": 0}, {"q": "Placeholder question 11?", "options": ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6"], "a": 0}, {"q": "Placeholder question 12?", "options": ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6"], "a": 0}, {"q": "Placeholder question 13?", "options": ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6"], "a": 0}, {"q": "Placeholder question 14?", "options": ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6"], "a": 0}, {"q": "Placeholder question 15?", "options": ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6"], "a": 0}, {"q": "Placeholder question 16?", "options": ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6"], "a": 0}, {"q": "Placeholder question 17?", "options": ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6"], "a": 0}, {"q": "Placeholder question 18?", "options": ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6"], "a": 0}, {"q": "Placeholder question 19?", "options": ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6"], "a": 0}, {"q": "Placeholder question 20?", "options": ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6"], "a": 0}, {"q": "Placeholder question 21?", "options": ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6"], "a": 0}, {"q": "Placeholder question 22?", "options": ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6"], "a": 0}, {"q": "Placeholder question 23?", "options": ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6"], "a": 0}, {"q": "Placeholder question 24?", "options": ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6"], "a": 0}, {"q": "Placeholder question 25?", "options": ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6"], "a": 0}];
+let current = 0, score = 0, timerInterval, timeLeft = 20, answered = false;
 
-let current=0,score=0,timer,waitDots;
-function $(id){return document.getElementById(id);}
+const qText = document.getElementById('question-text');
+const optDiv = document.getElementById('options');
+const timerDiv = document.getElementById('timer');
+const resultDiv = document.getElementById('result');
+const restartBtn = document.getElementById('restart-btn');
 
-function startQuiz(){
-  $('#intro').classList.add('hidden');
-  $('#quiz').classList.remove('hidden');
-  loadQuestion();
+function startQuiz() {
+    current = 0;
+    score = 0;
+    resultDiv.classList.add('hidden');
+    restartBtn.classList.add('hidden');
+    nextQuestion();
 }
 
-function loadQuestion(){
-  clearInterval(timer);
-  $('#time').textContent=20;
-  timer=setInterval(()=>{let t=$('#time');t.textContent--; if(t.textContent==0){nextQuestion();} },1000);
-  const q=quiz[current];
-  $('#qcount').textContent=`${current+1}/25`;
-  $('#question').textContent=q.question;
-  $('#options').innerHTML=q.options.map((opt,i)=>`<li><label><input type="radio" name="opt" value="${i}"> ${opt}</label></li>`).join('');
+function countdown() {
+    timeLeft = 20;
+    timerDiv.textContent = '⏱️ ' + timeLeft + 's';
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        timerDiv.textContent = '⏱️ ' + timeLeft + 's';
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            showAnswer(-1);
+        }
+    }, 1000);
 }
 
-function nextQuestion(){
-  clearInterval(timer);
-  const sel=document.querySelector('input[name="opt"]:checked');
-  if(sel && +sel.value===quiz[current].answer)score++;
-  current++;
-  if(current<quiz.length){loadQuestion();}
-  else{showWaiting();}
+function showQuestion(q) {
+    answered = false;
+    qText.textContent = q.q;
+    optDiv.innerHTML = '';
+    q.options.forEach((opt, i) => {
+        const btn = document.createElement('div');
+        btn.textContent = opt;
+        btn.className = 'option';
+        btn.onclick = () => { if (!answered) showAnswer(i); };
+        optDiv.appendChild(btn);
+    });
+    countdown();
 }
 
-function showWaiting(){
-  $('#quiz').classList.add('hidden');
-  $('#waiting').classList.remove('hidden');
-  let dots=0;
-  waitDots=setInterval(()=>{$('#dots').textContent='.'.repeat((++dots)%4)},500);
-  setTimeout(showResult,5000);
+function showAnswer(selected) {
+    answered = true;
+    clearInterval(timerInterval);
+    const correct = questions[current].a;
+    if (selected === correct) {
+        score++;
+    }
+    Array.from(optDiv.children).forEach((el, i) => {
+        if (i === correct) el.style.background = '#060';
+        else if (i === selected) el.style.background = '#600';
+        el.style.cursor = 'default';
+    });
+    setTimeout(() => {
+        current++;
+        nextQuestion();
+    }, 1000);
 }
 
-function showResult(){
-  clearInterval(waitDots);
-  $('#waiting').classList.add('hidden');
-  $('#result').classList.remove('hidden');
-  $('#score-text').textContent=`Je score: ${score} van 25`;
-  let msg="Goed gedaan!";
-  if(score===25)msg="Rocklegende! Perfect!";
-  else if(score>=18)msg="Metal‑Maestro!";
-  else if(score>=10)msg="Strak gespeeld!";
-  else msg="Blijf oefenen, headbanger!";
-  $('#comment').textContent=msg;
+function nextQuestion() {
+    if (current < questions.length) {
+        showQuestion(questions[current]);
+    } else {
+        endQuiz();
+    }
 }
+
+function endQuiz() {
+    qText.textContent = 'Quiz finished!';
+    optDiv.innerHTML = '';
+    timerDiv.textContent = '';
+    resultDiv.textContent = 'Your score: ' + score + ' / ' + questions.length;
+    resultDiv.classList.remove('hidden');
+    restartBtn.classList.remove('hidden');
+}
+
+restartBtn.onclick = startQuiz;
+startQuiz();
 </script>
 </body>
 </html>
