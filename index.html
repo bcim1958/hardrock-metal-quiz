@@ -1,141 +1,35 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Hard Rock & Metal Quiz</title>
-    <style>
-        body {
-            background: url('https://images.unsplash.com/photo-1532298488760-970ff6decf2b') no-repeat center center fixed;
-            background-size: cover;
-            font-family: 'Arial Black', sans-serif;
-            color: white;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-        }
-        .quiz-container {
-            background-color: rgba(0, 0, 0, 0.85);
-            margin: 50px auto;
-            padding: 30px;
-            max-width: 700px;
-            border-radius: 12px;
-            box-shadow: 0 0 15px #f00;
-        }
-        .question {
-            font-size: 1.5em;
-            margin-bottom: 20px;
-        }
-        .answers label {
-            display: block;
-            text-align: left;
-            margin: 10px 0;
-            cursor: pointer;
-        }
-        button {
-            padding: 10px 20px;
-            margin-top: 20px;
-            font-size: 1em;
-            background-color: crimson;
-            color: white;
-            border: none;
-            border-radius: 5px;
-        }
-        .result {
-            font-size: 1.3em;
-            margin-top: 20px;
-        }
-    </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Hardrock & Metal Quiz Demo</title>
+<style>
+body{font-family:'Arial Black',sans-serif;background:url('https://images.unsplash.com/photo-1614359992100-2f6b12ec3d27?auto=format&fit=crop&w=1950&q=80') center/cover fixed no-repeat;margin:0;color:#fff}
+.wrap{max-width:700px;margin:60px auto;padding:30px 40px;background:rgba(0,0,0,.85);border-radius:12px;box-shadow:0 0 15px #f00}
+h1,h2{text-align:center;color:#ff4444}
+ul{list-style:none;padding:0}
+li{margin:12px 0}
+button{padding:10px 22px;border:0;border-radius:8px;background:#ff4444;color:#fff;cursor:pointer}
+.hidden{display:none}
+</style>
 </head>
 <body>
-<div class="quiz-container">
-    <div id="quiz">
-        <div class="question" id="question">Vraag wordt geladen...</div>
-        <form class="answers" id="answers"></form>
-        <div><button onclick="submitAnswer()">Volgende</button></div>
-        <div class="result" id="result"></div>
-    </div>
+<div class="wrap">
+<h1>Hardrock & Metal Quiz 🤘</h1>
+<div id="quiz">
+<h2 id="q"></h2>
+<ul id="opt"></ul>
+<p>Tijd: <span id="t">20</span>s</p>
+<button onclick="next()">Volgende</button>
+</div>
+<div id="res" class="hidden"><h2 id="score"></h2></div>
 </div>
 <script>
-    const quizData = [
-        {
-            question: "Welke band bracht het album 'Paranoid' uit in 1970?",
-            options: ["Led Zeppelin", "Deep Purple", "Black Sabbath", "KISS", "Uriah Heep", "Motörhead"],
-            answer: 2
-        },
-        {
-            question: "Wat is de naam van het glam metal-icoon dat bekend werd met 'Girls, Girls, Girls'?",
-            options: ["Poison", "Ratt", "Whitesnake", "Mötley Crüe", "Twisted Sister", "Def Leppard"],
-            answer: 3
-        }
-        // Voeg hier meer vragen toe tot 25
-    ];
-
-    let currentQuestion = 0;
-    let score = 0;
-    let timer;
-    const timeLimit = 20; // seconden
-
-    function loadQuestion() {
-        if (currentQuestion >= quizData.length) {
-            document.getElementById('quiz').innerHTML = `<div class="result">Je score: ${score}/${quizData.length}<br>${getFeedback(score)}</div>`;
-            return;
-        }
-
-        const q = quizData[currentQuestion];
-        document.getElementById('question').innerText = q.question;
-        const answersForm = document.getElementById('answers');
-        answersForm.innerHTML = "";
-
-        q.options.forEach((opt, index) => {
-            const id = `option${index}`;
-            answersForm.innerHTML += `
-                <label>
-                    <input type="radio" name="answer" value="${index}" id="${id}"/>
-                    ${opt}
-                </label>
-            `;
-        });
-
-        // Start timer
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-            submitAnswer(true);
-        }, timeLimit * 1000);
-    }
-
-    function submitAnswer(auto = false) {
-        const options = document.getElementsByName('answer');
-        let selected = -1;
-        for (let opt of options) {
-            if (opt.checked) {
-                selected = parseInt(opt.value);
-                break;
-            }
-        }
-
-        if (selected === -1 && !auto) {
-            alert("Kies een antwoord voordat je doorgaat.");
-            return;
-        }
-
-        if (selected === quizData[currentQuestion].answer) {
-            score++;
-        }
-
-        currentQuestion++;
-        loadQuestion();
-    }
-
-    function getFeedback(score) {
-        const pct = (score / quizData.length) * 100;
-        if (pct >= 80) return "Rock on! 🔥 Je hebt geweldige kennis!";
-        if (pct >= 50) return "Goed gedaan! 🎸 Je zit op het juiste spoor!";
-        return "Niet slecht, maar je kunt beter! 🤘 Probeer het nog eens.";
-    }
-
-    window.onload = loadQuestion;
+const quiz=[{q:"Welke band bracht in 1980 het album ‘Back in Black’ uit?",o:["Led Zeppelin","AC/DC","Van Halen","Iron Maiden","Motörhead","Scorpions"],a:1},{q:"Wie is de zanger van Iron Maiden sinds 1981 (met korte onderbreking)?",o:["Rob Halford","Bruce Dickinson","David Coverdale","Ozzy Osbourne","Ronnie James Dio","Ian Gillan"],a:1},{q:"Wat is het debuutalbum van Guns N’ Roses uit 1987?",o:["Paradise City","Use Your Illusion","Appetite for Destruction","G N' R Lies","Sweet Child O' Mine","Welcome to the Jungle"],a:2},{q:"Welke band bracht het glam‑metal‑album ‘Slippery When Wet’ uit?",o:["Bon Jovi","Mötley Crüe","Cinderella","Whitesnake","Poison","Skid Row"],a:0},{q:"Wat was een grote hit van Deep Purple in 1972?",o:["Paranoid","Smoke on the Water","Breaking the Law","Living After Midnight","Iron Man","Highway to Hell"],a:1}];
+let i=0,s=0,timer;
+function load(){clearInterval(timer);document.getElementById('t').textContent=20;timer=setInterval(()=>{let x=document.getElementById('t');x.textContent--;if(x.textContent==0){clearInterval(timer);next();}},1000);const {q,o}=quiz[i];document.getElementById('q').textContent=q;document.getElementById('opt').innerHTML=o.map((v,k)=>`<li><label><input type="radio" name="a" value="${k}"> ${v}</label></li>`).join('');}
+function next(){clearInterval(timer);const sel=document.querySelector('input[name="a"]:checked');if(sel&&+sel.value===quiz[i].a)s++;if(++i<quiz.length)load();else{document.getElementById('quiz').classList.add('hidden');let msg=s==5?"Rocklegende!":s<3?"Blijf oefenen, headbanger!":"Goed gedaan!";document.getElementById('score').textContent=`${msg} Je score: ${s}/5`;document.getElementById('res').classList.remove('hidden');}}
+window.onload=load;
 </script>
-</body>
-</html>
+</body></html>
